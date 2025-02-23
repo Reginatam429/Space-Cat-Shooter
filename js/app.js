@@ -11,7 +11,7 @@ const FRAME_HEIGHT = 630;
 const TOTAL_FRAMES = 4; // Number of frames in your spritesheet
 
 // Dynamic sizing relative to canvas
-const PLAYER_WIDTH_RATIO = 0.5; // 10% of canvas width
+const PLAYER_WIDTH_RATIO = 0.1; // 10% of canvas width
 let playerWidth, playerHeight = 0;
 
 function updatePlayerSize() {
@@ -26,10 +26,10 @@ let currentFrame = 0;
 function resizeCanvas() {
     canvas.width = main.clientWidth;
     canvas.height = main.clientHeight;
-    // Ensure player is initialized before trying to update its position
-    if (typeof player !== "undefined" && player !== null) {
-        player.y = canvas.height / 2; // Adjust to canvas height
-    }
+
+    updatePlayerSize(); // Initialize player size
+    player.resize();
+    player.y = canvas.height / 2; // Adjust position
 }
 
 function animateFrames() {
@@ -53,7 +53,7 @@ class Player {
     }
 
     draw() {
-        console.log("Drawing player at:", this.x, this.y);
+        console.log("Drawing player at:", this.x, this.y, "Size:", this.width, this.height);
         context.drawImage(
             playerImage,
             currentFrame * FRAME_WIDTH, // Crop x position
@@ -70,6 +70,11 @@ class Player {
     shoot() {
         console.log("Pew! Pew! Laser fired!");
     }
+    resize() {
+        // Dynamically update player's size
+        this.width = playerWidth;
+        this.height = playerHeight;
+    }
 }
 
 
@@ -78,13 +83,14 @@ resizeCanvas();
 
 // Event Listeners
 window.addEventListener('resize', resizeCanvas);
+// Movement Controls
 document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowUp') player.move('up');
     if (event.key === 'ArrowDown') player.move('down');
     // if (event.key === ' ') player.shoot(); // Fire laser on Spacebar
 });
 
-// Animation Loop
+// Game Loop
 function gameLoop() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     player.draw();
@@ -92,15 +98,6 @@ function gameLoop() {
 }
 
 playerImage.onload = function () {
-    console.log("Player image loaded successfully.");
+    //console.log("Player image loaded successfully.");
     gameLoop(); // Start the game loop only after image loads
 };
-
-playerImage.onerror = function () {
-    console.error("Error: Player image failed to load. Check the path.");
-};
-
-console.log("Canvas size:", canvas.width, canvas.height);
-console.log("Player Y Position:", player.y, "Canvas Height:", canvas.height);
-
-

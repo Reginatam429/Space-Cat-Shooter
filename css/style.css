@@ -40,6 +40,11 @@ canvas {
     font-style: normal;
 }
 
+.sparkleimg{
+    height: 75px;
+    width: 100px;
+}
+
 .sub-header {
     display: flex;
     justify-content: space-between;
