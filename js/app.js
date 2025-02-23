@@ -1,4 +1,3 @@
-
 const canvas = document.querySelector('canvas');
 const main = document.querySelector('main'); 
 const context = canvas.getContext('2d');
@@ -11,16 +10,16 @@ const FRAME_WIDTH = 950;
 const FRAME_HEIGHT = 630;
 const TOTAL_FRAMES = 4; // Number of frames in your spritesheet
 
-// ✅ Dynamic sizing relative to canvas
-const PLAYER_WIDTH_RATIO = 0.5; // ✅ 10% of canvas width
-let playerWidth, playerHeight;
+// Dynamic sizing relative to canvas
+const PLAYER_WIDTH_RATIO = 0.5; // 10% of canvas width
+let playerWidth, playerHeight = 0;
 
 function updatePlayerSize() {
     playerWidth = canvas.width * PLAYER_WIDTH_RATIO;
     playerHeight = (FRAME_HEIGHT / FRAME_WIDTH) * playerWidth; // Maintain aspect ratio
 }
 
-updatePlayerSize(); // ✅ Initialize player size
+updatePlayerSize(); // Initialize player size
 
 let currentFrame = 0;
 
@@ -101,8 +100,6 @@ playerImage.onerror = function () {
     console.error("Error: Player image failed to load. Check the path.");
 };
 
-// player.draw();
-// gameLoop();
 console.log("Canvas size:", canvas.width, canvas.height);
 console.log("Player Y Position:", player.y, "Canvas Height:", canvas.height);
 

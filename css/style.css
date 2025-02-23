@@ -49,7 +49,7 @@ canvas {
     background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
     padding: 20px 10px;
     margin: 0;
-    padding: 0;
+    padding: 0 30px;
     height: 8vh; /* Sets viewport height */
 }
 
