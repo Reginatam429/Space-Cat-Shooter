@@ -1,0 +1,61 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex-grow: 1; /* Makes it take all remaining space */
+    display: flex;
+    justify-content: center; /* Center canvas horizontally */
+    align-items: center; /* Center canvas vertically */
+    width: 100%;
+    height: calc(100vh - 23vh); /* Subtract header & sub-header height */
+    min-height: 300px; /* Ensure it never collapses */
+}
+
+canvas {
+    display: block;
+    background-color: black;
+}
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: rgb(82,93,233);
+    background: linear-gradient(90deg, rgba(82,93,233,1) 0%, rgba(201,100,223,1) 52%, rgba(244,176,233,1) 100%);
+    padding: 20px 10px;
+    margin: 0;
+    padding: 0;
+    height: 15vh; /* Sets viewport height */
+}
+  
+.game-title {
+    color: white;
+    font-family: "Shrikhand", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.sub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+    background: rgb(238,174,202);
+    background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
+    padding: 20px 10px;
+    margin: 0;
+    padding: 0;
+    height: 8vh; /* Sets viewport height */
+}
+
+/* fonts */
+.shrikhand-regular {
+    font-family: "Shrikhand", serif;
+    font-weight: 400;
+    font-style: normal;
+}
