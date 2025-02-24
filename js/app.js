@@ -1,6 +1,7 @@
 const canvas = document.querySelector('canvas');
 const main = document.querySelector('main'); 
 const context = canvas.getContext('2d');
+const scoreElement = document.getElementById('score-content');
 
 const bgImage = new Image();
 bgImage.src = "./images/background.png";
@@ -28,6 +29,7 @@ function updatePlayerSize() {
 updatePlayerSize(); // Initialize player size
 
 let currentFrame = 0;
+let score = 0;
 const projectiles = []; // Store all bullets (player & enemies)
 const enemies = []; // Store all enemies
 
@@ -52,7 +54,7 @@ class Player {
         this.y = y ?? 100;
         this.width = playerWidth;
         this.height = playerHeight;
-        this.speed = 15;
+        this.speed = 18;
     }
 
     move(direction) {
@@ -180,6 +182,10 @@ function gameLoop() {
                     // Remove both the enemy and the projectile
                     enemies.splice(eIndex, 1);
                     projectiles.splice(pIndex, 1);
+                    
+                    // Update score 
+                    score += 100;
+                    scoreElement.innerText = score;
                 }
             });
         
