@@ -2,6 +2,7 @@ const canvas = document.querySelector('canvas');
 const main = document.querySelector('main'); 
 const context = canvas.getContext('2d');
 const scoreElement = document.getElementById('score-content');
+const lifeElement = document.getElementById('life-content');
 
 const bgImage = new Image();
 bgImage.src = "./images/background.png";
@@ -11,6 +12,9 @@ playerImage.src = './images/player.png';
 
 const enemyImage = new Image();
 enemyImage.src = './images/enemyship1.png';
+
+const heartImage = new Image();
+heartImage.src = './images/heart.png';
 
 // Spritesheet settings
 const FRAME_WIDTH = 950; 
@@ -30,6 +34,7 @@ updatePlayerSize(); // Initialize player size
 
 let currentFrame = 0;
 let score = 0;
+let lives = 3;
 const projectiles = []; // Store all bullets (player & enemies)
 const enemies = []; // Store all enemies
 
@@ -146,6 +151,22 @@ function spawnEnemy() {
     setTimeout(spawnEnemy, Math.random() * 2000 + 1000); // Spawn every 1-3 seconds
 
 }
+
+// Function to update heart images
+function updateLives(lives) {
+    lifeElement.innerHTML = ""; // Clear previous hearts
+
+    for (let i = 0; i < lives; i++) {
+        const heart = document.createElement("img");
+        heart.src = heartImage.src; 
+        heart.alt = "heart representing game lives";
+        heart.style.width = "30px";
+        heart.style.height = "30px";
+        lifeElement.appendChild(heart);
+    }
+}
+
+updateLives(lives);
 
 const player = new Player(50, canvas.height / 2);
 resizeCanvas();

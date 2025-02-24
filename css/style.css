@@ -95,12 +95,18 @@ button {
 #score-content {
     min-width: 80px; 
     text-align: right;
+    gap: 10px;
 }
 
 #life-content {
     min-width: 100px;
     display: flex;
     gap: 5px;
+}
+
+#life-content img{
+    width: 30px;
+    height: 30px;
 }
 
 /* fonts */
