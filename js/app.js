@@ -5,6 +5,9 @@ const context = canvas.getContext('2d');
 const playerImage = new Image();
 playerImage.src = './images/player.png';
 
+const enemyImage = new Image();
+enemyImage.src = './images/enemyship1.png';
+
 // Spritesheet settings
 const FRAME_WIDTH = 950; 
 const FRAME_HEIGHT = 630;
@@ -23,6 +26,7 @@ updatePlayerSize(); // Initialize player size
 
 let currentFrame = 0;
 const projectiles = []; // Store all bullets (player & enemies)
+const enemies = []; // Store all enemies
 
 function resizeCanvas() {
     canvas.width = main.clientWidth;
@@ -79,8 +83,24 @@ class Player {
     }
 }
 
-const player = new Player(50, canvas.height / 2);
-resizeCanvas();
+// Enemy Class
+class Enemy {
+    constructor() {
+        this.width = 60; // Set enemy width
+        this.height = 60; // Set enemy height
+        this.x = canvas.width; // Spawn at the right edge
+        this.y = Math.random() * (canvas.height - this.height); // Random y position
+        this.speed = Math.random() * 3 + 2; // Random speed between 2 and 5
+    }
+
+    update() {
+        this.x -= this.speed; // Move left
+    }
+
+    draw() {
+        context.drawImage(enemyImage, this.x, this.y, this.width, this.height);
+    }
+}
 
 class Projectile {
     constructor(x, y,direction) {
@@ -101,6 +121,15 @@ class Projectile {
         context.fillRect(this.x, this.y, this.width, this.height);
     }
 }
+
+// Function to spawn enemies at random intervals
+function spawnEnemy() {
+    enemies.push(new Enemy());
+    setTimeout(spawnEnemy, Math.random() * 2000 + 1000); // Spawn every 1-3 seconds
+}
+
+const player = new Player(50, canvas.height / 2);
+resizeCanvas();
 
 // Event Listeners
 window.addEventListener('resize', resizeCanvas);
@@ -129,10 +158,26 @@ function gameLoop() {
             projectiles.splice(index, 1);
         }
     });
+
+     // Move & draw enemies
+     enemies.forEach((enemy, index) => {
+        enemy.update();
+        enemy.draw();
+
+        // Remove off-screen enemies
+        if (enemy.x + enemy.width < 0) {
+            enemies.splice(index, 1);
+        }
+    });
+
     requestAnimationFrame(gameLoop);
 }
 
 playerImage.onload = function () {
     //console.log("Player image loaded successfully.");
     gameLoop(); // Start the game loop only after image loads
+};
+
+enemyImage.onload = function () {
+    spawnEnemy(); // Start spawning enemies after enemy image loads
 };
