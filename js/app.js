@@ -2,6 +2,9 @@ const canvas = document.querySelector('canvas');
 const main = document.querySelector('main'); 
 const context = canvas.getContext('2d');
 
+const bgImage = new Image();
+bgImage.src = "./images/background.png";
+
 const playerImage = new Image();
 playerImage.src = './images/player.png';
 
@@ -153,7 +156,7 @@ document.addEventListener('keydown', (event) => {
 // Game Loop
 function gameLoop() {
     context.clearRect(0, 0, canvas.width, canvas.height);
-
+    context.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
     //draw player
     player.draw();
 
@@ -201,6 +204,10 @@ function gameLoop() {
 
     requestAnimationFrame(gameLoop);
 }
+
+bgImage.onload = function () {
+    context.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+};
 
 playerImage.onload = function () {
     //console.log("Player image loaded successfully.");
