@@ -20,6 +20,31 @@ canvas {
     display: block;
     background-color: black;
 }
+
+button {
+    background-color: #EA4C89;
+    border-radius: 8px;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    display: inline-block;
+    font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    height: 40px;
+    line-height: 20px;
+    margin: 0;
+    outline: none;
+    padding: 10px 16px;
+    position: relative;
+    text-align: center;
+    transition: color 100ms;
+}
+
+.button:hover,
+.button:focus {
+  background-color: #F082AC;
+}
+
 .header {
     display: flex;
     justify-content: center;
@@ -56,6 +81,26 @@ canvas {
     margin: 0;
     padding: 0 30px;
     height: 8vh; /* Sets viewport height */
+}
+
+#score, #life {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Creates space between text and value */
+    min-width: 180px;
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+#score-content {
+    min-width: 80px; 
+    text-align: right;
+}
+
+#life-content {
+    min-width: 100px;
+    display: flex;
+    gap: 5px;
 }
 
 /* fonts */

@@ -103,6 +103,10 @@ class Enemy {
     draw() {
         context.drawImage(enemyImage, this.x, this.y, this.width, this.height);
     }
+
+    shoot() {
+        projectiles.push(new Projectile(this.x, this.y + this.height / 2, "left", 7)); // Fire left, slower speed
+    }
 }
 
 class Projectile {
@@ -138,6 +142,7 @@ class Projectile {
 function spawnEnemy() {
     enemies.push(new Enemy());
     setTimeout(spawnEnemy, Math.random() * 2000 + 1000); // Spawn every 1-3 seconds
+
 }
 
 const player = new Player(50, canvas.height / 2);
