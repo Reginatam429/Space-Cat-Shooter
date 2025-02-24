@@ -120,6 +120,15 @@ class Projectile {
         context.fillStyle = this.color;
         context.fillRect(this.x, this.y, this.width, this.height);
     }
+
+    checkCollision(enemy) {
+        return (
+            this.x < enemy.x + enemy.width &&
+            this.x + this.width > enemy.x &&
+            this.y < enemy.y + enemy.height &&
+            this.y + this.height > enemy.y
+        );
+    }
 }
 
 // Function to spawn enemies at random intervals
@@ -152,6 +161,26 @@ function gameLoop() {
     projectiles.forEach((projectile, index) => {
         projectile.update();
         projectile.draw();
+
+        projectiles.forEach((projectile, pIndex) => {
+            projectile.update();
+            projectile.draw();
+        
+            // Check collision with each enemy
+            enemies.forEach((enemy, eIndex) => {
+                if (projectile.checkCollision(enemy)) {
+                    // Remove both the enemy and the projectile
+                    enemies.splice(eIndex, 1);
+                    projectiles.splice(pIndex, 1);
+                }
+            });
+        
+            // Remove off-screen bullets
+            if (projectile.x > canvas.width || projectile.x < 0) {
+                projectiles.splice(pIndex, 1);
+            }
+        });
+        
 
         // Remove off-screen bullets
         if (projectile.x > canvas.width || projectile.x < 0) {
