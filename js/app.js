@@ -14,7 +14,7 @@ const enemyImage = new Image();
 enemyImage.src = './images/enemyship1.png';
 
 const heartImage = new Image();
-heartImage.src = './images/heart.png';
+heartImage.src = './images/heart.gif';
 
 // Spritesheet settings
 const FRAME_WIDTH = 950; 
