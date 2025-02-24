@@ -8,7 +8,7 @@ playerImage.src = './images/player.png';
 // Spritesheet settings
 const FRAME_WIDTH = 950; 
 const FRAME_HEIGHT = 630;
-const TOTAL_FRAMES = 4; // Number of frames in your spritesheet
+const TOTAL_FRAMES = 4; // Number of frames in spritesheet
 
 // Dynamic sizing relative to canvas
 const PLAYER_WIDTH_RATIO = 0.1; // 10% of canvas width
@@ -22,6 +22,7 @@ function updatePlayerSize() {
 updatePlayerSize(); // Initialize player size
 
 let currentFrame = 0;
+const projectiles = []; // Store all bullets (player & enemies)
 
 function resizeCanvas() {
     canvas.width = main.clientWidth;
@@ -37,7 +38,7 @@ function animateFrames() {
 }
 setInterval(animateFrames, 100); 
 
-
+//Player Class
 class Player {
     constructor(x, y) {
         this.x = x;
@@ -68,7 +69,8 @@ class Player {
     }
 
     shoot() {
-        console.log("Pew! Pew! Laser fired!");
+        projectiles.push(new Projectile(this.x + this.width, this.y + this.height / 2, "right")); // Fire right
+        //console.log("Pew! Pew! Laser fired!");
     }
     resize() {
         // Dynamically update player's size
@@ -77,9 +79,28 @@ class Player {
     }
 }
 
-
 const player = new Player(50, canvas.height / 2);
 resizeCanvas();
+
+class Projectile {
+    constructor(x, y,direction) {
+        this.x = x;
+        this.y = y;
+        this.direction = direction; // right for player, left for enemies
+        this.width = 10;
+        this.height = 5;
+        this.speed = 10;
+        this.color = direction === "right" ? "pink" : "blue"; // Player bullets are pink, enemy bullets are blue
+    }
+    update() {
+        this.x += this.direction === "right" ? this.speed : -this.speed;
+    }
+
+    draw() {
+        context.fillStyle = this.color;
+        context.fillRect(this.x, this.y, this.width, this.height);
+    }
+}
 
 // Event Listeners
 window.addEventListener('resize', resizeCanvas);
@@ -87,13 +108,27 @@ window.addEventListener('resize', resizeCanvas);
 document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowUp') player.move('up');
     if (event.key === 'ArrowDown') player.move('down');
-    // if (event.key === ' ') player.shoot(); // Fire laser on Spacebar
+    if (event.key === ' ') player.shoot(); // Fire laser on Spacebar
 });
+
 
 // Game Loop
 function gameLoop() {
     context.clearRect(0, 0, canvas.width, canvas.height);
+
+    //draw player
     player.draw();
+
+    // Move & draw projectiles
+    projectiles.forEach((projectile, index) => {
+        projectile.update();
+        projectile.draw();
+
+        // Remove off-screen bullets
+        if (projectile.x > canvas.width || projectile.x < 0) {
+            projectiles.splice(index, 1);
+        }
+    });
     requestAnimationFrame(gameLoop);
 }
 
