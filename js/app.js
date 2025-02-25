@@ -111,8 +111,19 @@ class Enemy {
         context.drawImage(enemyImage, this.x, this.y, this.width, this.height);
     }
 
-    shoot() {
-        projectiles.push(new Projectile(this.x, this.y + this.height / 2, "left", 7)); // Fire left, slower speed
+    startFiring() {
+        this.fireInterval = setInterval(() => {
+            if (this.x > 0) { // Only fire if still on screen
+                projectiles.push(new Projectile(this.x, this.y + this.height / 2, "left"));
+            }
+        }, Math.random() * 3000 + 1000); // Fire every 1-4 seconds
+    }
+
+    stopFiring() {
+        if (this.fireInterval) {
+            clearInterval(this.fireInterval);
+            this.fireInterval = null;
+        } // Stops enemy from firing when removed
     }
 }
 
@@ -124,7 +135,7 @@ class Projectile {
         this.width = 10;
         this.height = 5;
         this.speed = 10;
-        this.color = direction === "right" ? "pink" : "blue"; // Player bullets are pink, enemy bullets are blue
+        this.color = direction === "right" ? "pink" : "red"; // Player bullets are pink, enemy bullets are red
     }
     update() {
         this.x += this.direction === "right" ? this.speed : -this.speed;
@@ -147,7 +158,11 @@ class Projectile {
 
 // Function to spawn enemies at random intervals
 function spawnEnemy() {
-    enemies.push(new Enemy());
+    // enemies.push(new Enemy()); //create enemy
+    // enemy.startFiring(); // Start firing projectiles
+    const enemy = new Enemy(); // Create a new enemy
+    enemy.startFiring(); // Enemy starts shooting
+    enemies.push(enemy); // Add enemy to the enemies array
     setTimeout(spawnEnemy, Math.random() * 2000 + 1000); // Spawn every 1-3 seconds
 
 }
@@ -193,29 +208,24 @@ function gameLoop() {
         projectile.update();
         projectile.draw();
 
-        projectiles.forEach((projectile, pIndex) => {
-            projectile.update();
-            projectile.draw();
-        
-            // Check collision with each enemy
-            enemies.forEach((enemy, eIndex) => {
-                if (projectile.checkCollision(enemy)) {
-                    // Remove both the enemy and the projectile
-                    enemies.splice(eIndex, 1);
-                    projectiles.splice(pIndex, 1);
-                    
-                    // Update score 
-                    score += 100;
-                    scoreElement.innerText = score;
-                }
-            });
-        
-            // Remove off-screen bullets
-            if (projectile.x > canvas.width || projectile.x < 0) {
-                projectiles.splice(pIndex, 1);
+        // Check collision with each enemy
+        enemies.forEach((enemy, eIndex) => {
+            if (projectile.checkCollision(enemy)) {
+                // Remove both the enemy and the projectile
+                enemies.splice(eIndex, 1);
+                projectiles.splice(index, 1);
+                enemy.stopFiring(); // Stop firing before removing
+                
+                // Update score 
+                score += 100;
+                scoreElement.innerText = score;
             }
         });
-        
+
+        // Remove off-screen bullets
+        if (projectile.x > canvas.width || projectile.x < 0) {
+            projectiles.splice(index, 1);
+            }
 
         // Remove off-screen bullets
         if (projectile.x > canvas.width || projectile.x < 0) {
@@ -230,6 +240,7 @@ function gameLoop() {
 
         // Remove off-screen enemies
         if (enemy.x + enemy.width < 0) {
+            enemy.stopFiring();
             enemies.splice(index, 1);
         }
     });
