@@ -68,7 +68,6 @@ class Player {
     }
 
     draw() {
-        console.log("Drawing player at:", this.x, this.y, "Size:", this.width, this.height);
         context.drawImage(
             playerImage,
             currentFrame * FRAME_WIDTH, // Crop x position
@@ -146,15 +145,34 @@ class Projectile {
         context.fillRect(this.x, this.y, this.width, this.height);
     }
 
-    checkCollision(enemy) {
+    checkCollision(target) {
         return (
-            this.x < enemy.x + enemy.width &&
-            this.x + this.width > enemy.x &&
-            this.y < enemy.y + enemy.height &&
-            this.y + this.height > enemy.y
+            this.x < target.x + target.width &&
+            this.x + this.width > target.x &&
+            this.y < target.y + target.height &&
+            this.y + this.height > target.y
         );
     }
 }
+
+function checkPlayerCollisions() {
+    projectiles.forEach((projectile, index) => {
+        if (projectile.direction ===  "left" && projectile.checkCollision(player)) {
+            //remove projectile
+            projectiles.splice(index, 1);
+            //reduce lives
+            lives -= 1;
+            updateLives();
+
+            // check for game over
+            if (lives === 0) {
+                //replace with gameover screen logic later
+                alert(`Game Over. Score: ${score}`);
+                window.location.reload();
+            }
+        }
+    })
+} 
 
 // Function to spawn enemies at random intervals
 function spawnEnemy() {
@@ -168,7 +186,7 @@ function spawnEnemy() {
 }
 
 // Function to update heart images
-function updateLives(lives) {
+function updateLives() {
     lifeElement.innerHTML = ""; // Clear previous hearts
 
     for (let i = 0; i < lives; i++) {
@@ -204,15 +222,23 @@ function gameLoop() {
     player.draw();
 
     // Move & draw projectiles
+    for (let i = projectiles.length - 1; i >= 0; i--){
+        let projectile = projectiles[i];
+        projectile.update();
+        projectile.draw();
+
+        // Check if player is hit
+        checkPlayerCollisions();
+    }
     projectiles.forEach((projectile, index) => {
         projectile.update();
         projectile.draw();
 
         // Check collision with each enemy
-        enemies.forEach((enemy, eIndex) => {
+        enemies.forEach((enemy, index) => {
             if (projectile.checkCollision(enemy)) {
                 // Remove both the enemy and the projectile
-                enemies.splice(eIndex, 1);
+                enemies.splice(index, 1);
                 projectiles.splice(index, 1);
                 enemy.stopFiring(); // Stop firing before removing
                 
@@ -234,7 +260,7 @@ function gameLoop() {
     });
 
      // Move & draw enemies
-     enemies.forEach((enemy, index) => {
+    enemies.forEach((enemy, index) => {
         enemy.update();
         enemy.draw();
 
