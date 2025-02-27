@@ -46,6 +46,29 @@ let enemySpawnTimeout = null;
 let gameRunning = false; // Track game loop status
 const projectiles = []; // Store all bullets (player & enemies)
 const enemies = []; // Store all enemies
+let isFirstLoad = sessionStorage.getItem("gameStarted") ? false : true; // Track if the game has been restarted
+
+function showStartPopup() {
+    // Draw a semi-transparent background
+    context.fillStyle = "rgba(0, 0, 0, 0.8)";
+    context.fillRect(canvas.width / 4, canvas.height / 4, canvas.width / 2, canvas.height / 2);
+
+    // Draw move set instructions
+    context.fillStyle = "white";
+    context.font = "24px Arial";
+    context.textAlign = "center";
+    context.fillText("🚀 Welcome to Space Cat Shooter! 🚀", canvas.width / 2, canvas.height / 2 - 60);
+    context.fillText("Move Up: ↑ Arrow", canvas.width / 2, canvas.height / 2 - 10);
+    context.fillText("Move Down: ↓ Arrow", canvas.width / 2, canvas.height / 2 + 20);
+
+    context.fillText("Score 1000 points to win", canvas.width / 2, canvas.height / 2 + 70);
+
+    // Change restart button to "Start Game"
+    restartButton.innerText = "Start Game";
+    restartButton.style.position = "absolute";
+    restartButton.style.top = `${canvas.offsetTop + canvas.height / 2 + 120}px`; 
+    restartButton.style.left = `${canvas.offsetLeft + canvas.width / 2 - 50}px`; 
+}
 
 function resizeCanvas() {
     canvas.width = main.clientWidth;
@@ -94,7 +117,6 @@ class Player {
 
     shoot() {
         projectiles.push(new Projectile(this.x + this.width, this.y + this.height / 2, "right")); // Fire right
-        //console.log("Pew! Pew! Laser fired!");
     }
     resize() {
         // Dynamically update player's size
@@ -179,8 +201,7 @@ function checkPlayerCollisions() {
             // check for game over
             if (lives === 0) {
                 //replace with gameover screen logic later
-                alert(`Game Over. Score: ${score}`);
-                window.location.reload();
+                showPopup("💀 Game Over!");
             }
         }
     })
@@ -190,8 +211,8 @@ function checkPlayerCollisions() {
 function spawnEnemy() {
     if (!gameRunning) return;
 
-    const enemy = new Enemy(); // Create a new enemy
-    enemy.startFiring(); // Enemy starts shooting
+    const enemy = new Enemy();
+    enemy.startFiring(); 
     enemies.push(enemy); // Add enemy to the enemies array
     enemySpawnTimeout = setTimeout(spawnEnemy, Math.random() * 2000 + 1000); // Spawn every 1-3 seconds
 }
@@ -227,6 +248,11 @@ function gameInit() {
     scoreElement.innerText = score;
     updateLives(); 
 
+  // Clear enemies and projectiles before init
+    enemies.forEach(enemy => enemy.stopFiring()); 
+    enemies.length = 0; 
+    projectiles.length = 0;    
+
     // Start everything
     gameRunning = true;
     gameLoop();
@@ -244,34 +270,38 @@ function gameLoop() {
 
     player.draw();
 
-    projectiles.forEach((projectile, index) => {
+    // Iterate backwards for projectiles
+    for (let i = projectiles.length - 1; i >= 0; i--) {
+        let projectile = projectiles[i];
         projectile.update();
         projectile.draw();
         checkPlayerCollisions();
 
         // Check collision with each enemy
-        enemies.forEach((enemy, index) => {
-            if (projectiles.some(projectile => projectile.checkCollision(enemy))) {
-                // Remove both the enemy and the projectile
-                enemies.splice(index, 1);
-                projectiles.splice(index, 1);
+        for (let j = enemies.length - 1; j >= 0; j--) {
+            let enemy = enemies[j];
+
+            if (projectile.checkCollision(enemy)) {
                 enemy.stopFiring(); // Stop firing before removing
+                // Remove both the enemy and the projectile
+                enemies.splice(j, 1); 
+                projectiles.splice(i, 1); 
                 
                 // Update score 
                 score += 100;
                 scoreElement.innerText = score;
                 if (score >= 1000) {
-                    alert(`You Win! Score: ${score}`);
-                    window.location.reload();
+                    showPopup("🎉 You Win!");
                 }
+                break; // Stop checking other enemies after a hit
             }
-        });
+        };
 
         // Remove off-screen bullets
         if (projectile.x > canvas.width || projectile.x < 0) {
-            projectiles.splice(index, 1);
+            projectiles.splice(i, 1);
             }
-    });
+    };
 
      // Move & draw enemies
     enemies.forEach((enemy, index) => {
@@ -286,25 +316,26 @@ function gameLoop() {
     });
 }
 
-// RESTARTS the game
-function gameRestart() {
-    // Clear all game objects
-    projectiles.length = 0;
-    enemies.forEach(enemy => enemy.stopFiring()); // Stop enemy firing before clearing
-    enemies.length = 0;
+function showPopup(message) {
+    // Draw a semi-transparent background
+    context.fillStyle = "rgba(0, 0, 0, 0.8)";
+    context.fillRect(canvas.width / 4, canvas.height / 4, canvas.width / 2, canvas.height / 3);
 
-     // Stop existing game loop (clear scheduled frames)
-     if (gameLoopId) {
-        cancelAnimationFrame(gameLoopId); // Stops the previous game loop
-    }
+    // Draw the message
+    context.fillStyle = "white";
+    context.font = "30px Arial";
+    context.textAlign = "center";
+    context.fillText(message, canvas.width / 2, canvas.height / 2 - 60);
 
-    gameRunning = false; // Prevent multiple loops
-
-    // Stop existing enemy spawn timers
+    // Stop the game loop
+    gameRunning = false;
+    cancelAnimationFrame(gameLoopId);
     clearTimeout(enemySpawnTimeout);
 
-    // start game again
-    gameInit();
+    restartButton.style.position = "absolute";
+    restartButton.style.top = `${canvas.offsetTop + canvas.height / 2 - 40}px`; // Move below pop-up
+    restartButton.style.left = `${canvas.offsetLeft + canvas.width / 2 - 50}px`; // Centered
+    restartButton.style.display = "block"; // Make sure it's visible
 }
 
 // Event Listeners
@@ -315,13 +346,36 @@ document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowDown') player.move('down');
     if (event.key === ' ') player.shoot(); // Fire laser on Spacebar
 });
-// Restart Button
+// Function to restart the game when the restart button is clicked
 restartButton.addEventListener("click", () => {
-    window.location.reload();
+    if (restartButton.innerText === "Start Game") return; // Prevent gameInit from running twice
+
+    window.location.reload(); // Reload the page for a full restart
 });
+
 // Start game upon opening 
 window.onload = () => {
-    gameInit();
+    // Check if the page was fully reloaded (not just restarted in-game)
+    if (performance.getEntriesByType("navigation")[0]?.type === "reload") {
+        sessionStorage.removeItem("gameStarted"); // Reset session storage on full reload
+    }
+
+    let isFirstLoad = !sessionStorage.getItem("gameStarted"); // True if first time playing
+
+    if (isFirstLoad) {
+        showStartPopup(); // Show popup before starting the game
+        restartButton.onclick = startGame; // Attach event to start game
+    } else {
+        gameInit(); // Start game immediately if not first load
+    }
+};
+
+// Function to start the game after clicking "Start Game"
+function startGame() {
+    sessionStorage.setItem("gameStarted", "true"); // Mark game as started
+    restartButton.style.display = "none"; // Hide button after clicking
+    context.clearRect(0, 0, canvas.width, canvas.height); // Clear popup
+    gameInit(); // Start the game
 };
 
 bgImage.onload = function () {
