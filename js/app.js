@@ -4,6 +4,27 @@ const context = canvas.getContext('2d');
 const scoreElement = document.getElementById('score-content');
 const lifeElement = document.getElementById('life-content');
 const restartButton = document.getElementById('restart');
+const backgroundMusic = new Audio('./audio/gamebg.mp3');
+
+// Audios
+const laserSound = new Audio('./audio/laser.mp3');
+laserSound.volume = 0.7; // Adjust volume (0.0 - 1.0)
+
+const winSound = new Audio('./audio/win.mp3');
+winSound.volume = 0.7; // Adjust volume (0.0 - 1.0)
+
+const loseSound = new Audio('./audio/lose.mp3');
+loseSound.volume = 0.7; // Adjust volume (0.0 - 1.0)
+
+const startSound = new Audio('./audio/start.mp3');
+startSound.volume = 0.9; // Adjust volume (0.0 - 1.0)
+
+const enemyLaserSound = new Audio('./audio/enemylaser.mp3');
+enemyLaserSound.volume = 0.7; // Adjust volume (0.0 - 1.0)
+
+// background audio
+backgroundMusic.loop = true; // Keep playing on loop
+backgroundMusic.volume = 0.5; // Adjust volume (0.0 - 1.0)
 
 const bgImage = new Image();
 bgImage.src = "./images/background.png";
@@ -146,6 +167,8 @@ class Player {
 
     shoot() {
         projectiles.push(new Projectile(this.x + this.width, this.y + this.height / 2, "right")); // Fire right
+        laserSound.currentTime = 0; // Restart sound to allow rapid firing
+        laserSound.play().catch(err => console.warn("Laser sound failed:", err));
     }
     resize() {
         // Dynamically update player's size
@@ -179,6 +202,7 @@ class Enemy {
                 projectiles.push(new Projectile(this.x, this.y + this.height / 2, "left"));
             }
         }, Math.random() * 3000 + 1000); // Fire every 1-4 seconds
+        enemyLaserSound.play();
     }
 
     stopFiring() {
@@ -229,7 +253,7 @@ function checkPlayerCollisions() {
 
             // check for game over
             if (lives === 0) {
-                //replace with gameover screen logic later
+                loseSound.play()
                 showPopup("💀 Game Over! 💀");
             }
         }
@@ -268,6 +292,11 @@ function gameInit() {
     // Set game state
     score = 0;
     lives = 3;
+
+    // Play background music
+    if (backgroundMusic.paused) {
+        backgroundMusic.play().catch(err => console.warn("Audio play failed:", err));
+    }
 
     // Set player position
     player.x = 50;
@@ -320,6 +349,7 @@ function gameLoop() {
                 score += 100;
                 scoreElement.innerText = score;
                 if (score >= 500) {
+                    winSound.play()
                     showPopup("🎉 You Win! 🎉 ");
                 }
                 break; // Stop checking other enemies after a hit
@@ -361,6 +391,10 @@ function showPopup(message) {
     cancelAnimationFrame(gameLoopId);
     clearTimeout(enemySpawnTimeout);
 
+    // Stop background music when the game ends
+    backgroundMusic.pause();
+    backgroundMusic.currentTime = 0;
+
     restartButton.style.position = "absolute";
     restartButton.style.top = `${canvas.offsetTop + canvas.height / 2 - 40}px`; // Move below pop-up
     restartButton.style.left = `${canvas.offsetLeft + canvas.width / 2 - 50}px`; // Centered
@@ -377,8 +411,8 @@ document.addEventListener('keydown', (event) => {
 });
 // Function to restart the game when the restart button is clicked
 restartButton.addEventListener("click", () => {
+    startSound.play();
     if (restartButton.innerText === "Start Game") return; // Prevent gameInit from running twice
-
     window.location.reload(); // Reload the page for a full restart
 });
 

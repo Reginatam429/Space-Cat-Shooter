@@ -48,7 +48,7 @@ User Flow:
 ## Future Development
 
 - Set a timer based win condition to allow for saving high scores to compete against
-- Save scores in a database and display High Scores that reset after a set timeframe like a day,week, or month
+- Save scores in a database and display High Scores that reset after a set timeframe like a day, week, or month
 - Add more specicial effects like moving stars in the background and small animations when theres a collision detected or win/lose condition 
 - Add more levels and game modes with varying difficulty 
 - Dynamic movement for player that is compatible with mobile experience, hover mouse or finger to move player all around with clicking or tap to shoot
