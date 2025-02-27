@@ -61,7 +61,7 @@ function showStartPopup() {
     context.fillText("Move Up: ↑ Arrow", canvas.width / 2, canvas.height / 2 - 10);
     context.fillText("Move Down: ↓ Arrow", canvas.width / 2, canvas.height / 2 + 20);
 
-    context.fillText("Score 1000 points to win", canvas.width / 2, canvas.height / 2 + 70);
+    context.fillText("Score 500 points to win", canvas.width / 2, canvas.height / 2 + 70);
 
     // Change restart button to "Start Game"
     restartButton.innerText = "Start Game";
@@ -84,7 +84,7 @@ function resizeCanvas() {
 function animateFrames() {
     currentFrame = (currentFrame + 1) % TOTAL_FRAMES;
 }
-   setInterval(animateFrames, 100); 
+    setInterval(animateFrames, 100); 
 
 //Player Class
 class Player {
@@ -290,7 +290,7 @@ function gameLoop() {
                 // Update score 
                 score += 100;
                 scoreElement.innerText = score;
-                if (score >= 1000) {
+                if (score >= 500) {
                     showPopup("🎉 You Win!");
                 }
                 break; // Stop checking other enemies after a hit

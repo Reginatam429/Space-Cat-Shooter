@@ -38,8 +38,11 @@ User Flow:
 
 
 ## Difficulties/Unsolved Problems
-- 
+- Had problems with adapting a gif into animated sprites for the player character.
+- Was unable to make sure the restart button appears on the subheader while gameplay is active only without breaking the game due to time constraint 
 
 ## Future Development
 
-- 
+- Set a timer based win condition to allow for saving high scores to compete against
+- Save scores in a database and display High Scores that reset after a set timeframe like a day,week, or month
+- Add more specicial effects like moving stars in the background and small animations when theres a collision detected or win/lose condition 

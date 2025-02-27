@@ -42,7 +42,7 @@ button {
 
 .button:hover,
 .button:focus {
-  background-color: #F082AC;
+    background-color: #F082AC;
 }
 
 .header {
@@ -57,7 +57,7 @@ button {
     padding: 0;
     height: 15vh; /* Sets viewport height */
 }
-  
+
 .game-title {
     color: white;
     font-family: "Shrikhand", serif;
