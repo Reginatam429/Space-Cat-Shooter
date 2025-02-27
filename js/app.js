@@ -20,7 +20,13 @@ const startSound = new Audio('./audio/start.mp3');
 startSound.volume = 0.9; // Adjust volume (0.0 - 1.0)
 
 const enemyLaserSound = new Audio('./audio/enemylaser.mp3');
-enemyLaserSound.volume = 0.7; // Adjust volume (0.0 - 1.0)
+enemyLaserSound.volume = 0.6; // Adjust volume (0.0 - 1.0)
+
+const enemyHitSound = new Audio('./audio/enemyhit.mp3');
+enemyHitSound.volume = 0.9; // Adjust volume (0.0 - 1.0)
+
+const playerHitSound = new Audio('./audio/playerhit.mp3');
+playerHitSound.volume = 1; // Adjust volume (0.0 - 1.0)
 
 // background audio
 backgroundMusic.loop = true; // Keep playing on loop
@@ -247,6 +253,7 @@ function checkPlayerCollisions() {
         if (projectile.direction ===  "left" && projectile.checkCollision(player)) {
             //remove projectile
             projectiles.splice(index, 1);
+            playerHitSound.play();
             //reduce lives
             lives -= 1;
             updateLives();
@@ -342,6 +349,7 @@ function gameLoop() {
             if (projectile.checkCollision(enemy)) {
                 enemy.stopFiring(); // Stop firing before removing
                 // Remove both the enemy and the projectile
+                enemyHitSound.play();
                 enemies.splice(j, 1); 
                 projectiles.splice(i, 1); 
                 
