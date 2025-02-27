@@ -35,9 +35,7 @@ function updatePlayerSize() {
     playerHeight = (FRAME_HEIGHT / FRAME_WIDTH) * playerWidth; // Maintain aspect ratio
 }
 
-
-
-// let player;
+// global
 let currentFrame = 0;
 let score = 0;
 let lives = 3;
@@ -70,7 +68,19 @@ function showStartPopup() {
     restartButton.style.left = `${canvas.offsetLeft + canvas.width / 2 - 50}px`; 
 }
 
+// Function to redraw everything after resizing
+function drawAll() {
+    player.draw();
+    enemies.forEach(enemy => enemy.draw());
+    projectiles.forEach(projectile => projectile.draw());
+}
+
 function resizeCanvas() {
+    // Store the current game state
+    const prevWidth = canvas.width;
+    const prevHeight = canvas.height;
+
+    // Update canvas size
     canvas.width = main.clientWidth;
     canvas.height = main.clientHeight;
 
@@ -79,12 +89,31 @@ function resizeCanvas() {
         player.resize();
         player.y = canvas.height / 2; // Adjust position
     }
+    // Scale enemy positions to new canvas size
+    enemies.forEach(enemy => {
+        enemy.y = (enemy.y / prevHeight) * canvas.height;
+    });
+
+    // Scale projectiles to new canvas size
+    projectiles.forEach(projectile => {
+        projectile.y = (projectile.y / prevHeight) * canvas.height;
+    });
+
+    // Redraw background
+    context.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+
+    // Redraw everything after resizing
+    drawAll();
+
+    if (isFirstLoad) {
+        showStartPopup();
+    }
 }
 
 function animateFrames() {
     currentFrame = (currentFrame + 1) % TOTAL_FRAMES;
 }
-    setInterval(animateFrames, 100); 
+setInterval(animateFrames, 100); 
 
 //Player Class
 class Player {

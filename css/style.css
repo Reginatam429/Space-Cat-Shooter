@@ -22,20 +22,22 @@ canvas {
 }
 
 button {
-    background-color: #EA4C89;
+    /* background-color: #EA4C89; */
+    background: rgb(117,251,250);
+    background: linear-gradient(90deg, rgba(117,251,250,1) 0%, rgba(119,161,255,1) 52%, rgba(226,166,250,1) 100%);
     border-radius: 8px;
     box-sizing: border-box;
-    color: #FFFFFF;
+    color: #000000;
     display: inline-block;
-    font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 14px;
+    font-family: "Shrikhand", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 20px;
     font-weight: 500;
-    height: 40px;
+    height: 50px;
     line-height: 20px;
     margin: 0;
     outline: none;
     padding: 10px 16px;
-    position: relative;
+    position: absolute;
     text-align: center;
     transition: color 100ms;
 }
