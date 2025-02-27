@@ -3,18 +3,23 @@ const main = document.querySelector('main');
 const context = canvas.getContext('2d');
 const scoreElement = document.getElementById('score-content');
 const lifeElement = document.getElementById('life-content');
+const restartButton = document.getElementById('restart');
 
 const bgImage = new Image();
 bgImage.src = "./images/background.png";
+bgImage.alt = "Purple colorful galaxy"
 
 const playerImage = new Image();
 playerImage.src = './images/player.png';
+playerImage.alt = "Nyancat with rainbow trail"
 
 const enemyImage = new Image();
 enemyImage.src = './images/enemyship1.png';
+enemyImage.alt = "purple enemy spaceship"
 
 const heartImage = new Image();
 heartImage.src = './images/heart.gif';
+heartImage.alt = "spinning red pixel heart with sparkles"
 
 // Spritesheet settings
 const FRAME_WIDTH = 950; 
@@ -30,11 +35,15 @@ function updatePlayerSize() {
     playerHeight = (FRAME_HEIGHT / FRAME_WIDTH) * playerWidth; // Maintain aspect ratio
 }
 
-updatePlayerSize(); // Initialize player size
 
+
+// let player;
 let currentFrame = 0;
 let score = 0;
 let lives = 3;
+let gameLoopId = null; // Stores the requestAnimationFrame ID
+let enemySpawnTimeout = null;
+let gameRunning = false; // Track game loop status
 const projectiles = []; // Store all bullets (player & enemies)
 const enemies = []; // Store all enemies
 
@@ -43,14 +52,16 @@ function resizeCanvas() {
     canvas.height = main.clientHeight;
 
     updatePlayerSize(); // Initialize player size
-    player.resize();
-    player.y = canvas.height / 2; // Adjust position
+    if (player) {
+        player.resize();
+        player.y = canvas.height / 2; // Adjust position
+    }
 }
 
 function animateFrames() {
     currentFrame = (currentFrame + 1) % TOTAL_FRAMES;
 }
-setInterval(animateFrames, 100); 
+   setInterval(animateFrames, 100); 
 
 //Player Class
 class Player {
@@ -91,6 +102,7 @@ class Player {
         this.height = playerHeight;
     }
 }
+let player = new Player(50, canvas.height / 2);
 
 // Enemy Class
 class Enemy {
@@ -176,13 +188,12 @@ function checkPlayerCollisions() {
 
 // Function to spawn enemies at random intervals
 function spawnEnemy() {
-    // enemies.push(new Enemy()); //create enemy
-    // enemy.startFiring(); // Start firing projectiles
+    if (!gameRunning) return;
+
     const enemy = new Enemy(); // Create a new enemy
     enemy.startFiring(); // Enemy starts shooting
     enemies.push(enemy); // Add enemy to the enemies array
-    setTimeout(spawnEnemy, Math.random() * 2000 + 1000); // Spawn every 1-3 seconds
-
+    enemySpawnTimeout = setTimeout(spawnEnemy, Math.random() * 2000 + 1000); // Spawn every 1-3 seconds
 }
 
 // Function to update heart images
@@ -201,42 +212,46 @@ function updateLives() {
 
 updateLives(lives);
 
-const player = new Player(50, canvas.height / 2);
-resizeCanvas();
+// Starts new instance of a game, calls gameloop
+function gameInit() {
 
-// Event Listeners
-window.addEventListener('resize', resizeCanvas);
-// Movement Controls
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowUp') player.move('up');
-    if (event.key === 'ArrowDown') player.move('down');
-    if (event.key === ' ') player.shoot(); // Fire laser on Spacebar
-});
+    // Set game state
+    score = 0;
+    lives = 3;
 
+    // Set player position
+    player.x = 50;
+    player.y = canvas.height / 2;
 
-// Game Loop
+    // Update UI
+    scoreElement.innerText = score;
+    updateLives(); 
+
+    // Start everything
+    gameRunning = true;
+    gameLoop();
+    spawnEnemy();
+}
+
+// MAIN FUNCTION - Game Loop
 function gameLoop() {
+    if (!gameRunning) return; // Prevents multiple game loops
+
+    gameLoopId = requestAnimationFrame(gameLoop); // Store the frame ID
+
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-    //draw player
+
     player.draw();
 
-    // Move & draw projectiles
-    for (let i = projectiles.length - 1; i >= 0; i--){
-        let projectile = projectiles[i];
-        projectile.update();
-        projectile.draw();
-
-        // Check if player is hit
-        checkPlayerCollisions();
-    }
     projectiles.forEach((projectile, index) => {
         projectile.update();
         projectile.draw();
+        checkPlayerCollisions();
 
         // Check collision with each enemy
         enemies.forEach((enemy, index) => {
-            if (projectile.checkCollision(enemy)) {
+            if (projectiles.some(projectile => projectile.checkCollision(enemy))) {
                 // Remove both the enemy and the projectile
                 enemies.splice(index, 1);
                 projectiles.splice(index, 1);
@@ -245,6 +260,10 @@ function gameLoop() {
                 // Update score 
                 score += 100;
                 scoreElement.innerText = score;
+                if (score >= 1000) {
+                    alert(`You Win! Score: ${score}`);
+                window.location.reload();
+                }
             }
         });
 
@@ -252,11 +271,6 @@ function gameLoop() {
         if (projectile.x > canvas.width || projectile.x < 0) {
             projectiles.splice(index, 1);
             }
-
-        // Remove off-screen bullets
-        if (projectile.x > canvas.width || projectile.x < 0) {
-            projectiles.splice(index, 1);
-        }
     });
 
      // Move & draw enemies
@@ -270,19 +284,49 @@ function gameLoop() {
             enemies.splice(index, 1);
         }
     });
-
-    requestAnimationFrame(gameLoop);
 }
+
+// RESTARTS the game
+function gameRestart() {
+    // Clear all game objects
+    projectiles.length = 0;
+    enemies.forEach(enemy => enemy.stopFiring()); // Stop enemy firing before clearing
+    enemies.length = 0;
+
+     // Stop existing game loop (clear scheduled frames)
+     if (gameLoopId) {
+        cancelAnimationFrame(gameLoopId); // Stops the previous game loop
+    }
+
+    gameRunning = false; // Prevent multiple loops
+
+    // Stop existing enemy spawn timers
+    clearTimeout(enemySpawnTimeout);
+
+    // start game again
+    gameInit();
+}
+
+// Event Listeners
+window.addEventListener('resize', resizeCanvas);
+// Movement Controls
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowUp') player.move('up');
+    if (event.key === 'ArrowDown') player.move('down');
+    if (event.key === ' ') player.shoot(); // Fire laser on Spacebar
+});
+// Restart Button
+restartButton.addEventListener("click", () => {
+    window.location.reload();
+});
+// Start game upon opening 
+window.onload = () => {
+    gameInit();
+};
 
 bgImage.onload = function () {
     context.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
 };
 
-playerImage.onload = function () {
-    //console.log("Player image loaded successfully.");
-    gameLoop(); // Start the game loop only after image loads
-};
-
-enemyImage.onload = function () {
-    spawnEnemy(); // Start spawning enemies after enemy image loads
-};
+updatePlayerSize(); // Initialize player size
+resizeCanvas();
