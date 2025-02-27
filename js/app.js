@@ -262,7 +262,7 @@ function gameLoop() {
                 scoreElement.innerText = score;
                 if (score >= 1000) {
                     alert(`You Win! Score: ${score}`);
-                window.location.reload();
+                    window.location.reload();
                 }
             }
         });
