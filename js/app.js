@@ -55,7 +55,7 @@ function showStartPopup() {
 
     // Draw move set instructions
     context.fillStyle = "white";
-    context.font = "24px Arial";
+    context.font = "30px Copperplate";
     context.textAlign = "center";
     context.fillText("🚀 Welcome to Space Cat Shooter! 🚀", canvas.width / 2, canvas.height / 2 - 60);
     context.fillText("Move Up: ↑ Arrow", canvas.width / 2, canvas.height / 2 - 10);
@@ -201,7 +201,7 @@ function checkPlayerCollisions() {
             // check for game over
             if (lives === 0) {
                 //replace with gameover screen logic later
-                showPopup("💀 Game Over!");
+                showPopup("💀 Game Over! 💀");
             }
         }
     })
@@ -291,7 +291,7 @@ function gameLoop() {
                 score += 100;
                 scoreElement.innerText = score;
                 if (score >= 500) {
-                    showPopup("🎉 You Win!");
+                    showPopup("🎉 You Win! 🎉 ");
                 }
                 break; // Stop checking other enemies after a hit
             }
@@ -323,7 +323,7 @@ function showPopup(message) {
 
     // Draw the message
     context.fillStyle = "white";
-    context.font = "30px Arial";
+    context.font = "40px Copperplate";
     context.textAlign = "center";
     context.fillText(message, canvas.width / 2, canvas.height / 2 - 60);
 
