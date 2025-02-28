@@ -6,7 +6,7 @@ const lifeElement = document.getElementById('life-content');
 const restartButton = document.getElementById('restart');
 const backgroundMusic = new Audio('./audio/gamebg.mp3');
 
-// Audios
+// Audio
 const laserSound = new Audio('./audio/laser.mp3');
 laserSound.volume = 0.7; // Adjust volume (0.0 - 1.0)
 
@@ -402,6 +402,19 @@ function showPopup(message) {
     // Stop background music when the game ends
     backgroundMusic.pause();
     backgroundMusic.currentTime = 0;
+
+    // Trigger confetti if the player wins
+    if (message.includes("Win")) {
+        confetti({
+            particleCount: 500,
+            spread: 250,
+            startVelocity: 40,
+            gravity: 0.9,
+            origin: { x: 0.5, y: 0.6 }, // Center of the screen
+            zIndex: 999,
+        });
+    }
+
 
     restartButton.style.position = "absolute";
     restartButton.style.top = `${canvas.offsetTop + canvas.height / 2 - 40}px`; // Move below pop-up
