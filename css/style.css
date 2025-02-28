@@ -22,7 +22,6 @@ canvas {
 }
 
 button {
-    /* background-color: #EA4C89; */
     background: rgb(117,251,250);
     background: linear-gradient(90deg, rgba(117,251,250,1) 0%, rgba(119,161,255,1) 52%, rgba(226,166,250,1) 100%);
     border-radius: 8px;
