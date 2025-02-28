@@ -264,7 +264,7 @@ function checkPlayerCollisions() {
                 showPopup("💀 Game Over! 💀");
             }
         }
-    })
+    });
 } 
 
 // Function to spawn enemies at random intervals
@@ -345,22 +345,21 @@ function gameLoop() {
         // Check collision with each enemy
         for (let j = enemies.length - 1; j >= 0; j--) {
             let enemy = enemies[j];
-
-            if (projectile.checkCollision(enemy)) {
-                enemy.stopFiring(); // Stop firing before removing
-                // Remove both the enemy and the projectile
+        
+            if (projectile.direction === "right" && projectile.checkCollision(enemy)) {  
+                enemy.stopFiring();
                 enemyHitSound.play();
-                enemies.splice(j, 1); 
-                projectiles.splice(i, 1); 
-                
+                enemies.splice(j, 1);
+                projectiles.splice(i, 1);
+        
                 // Update score 
                 score += 100;
                 scoreElement.innerText = score;
                 if (score >= 500) {
-                    winSound.play()
+                    winSound.play();
                     showPopup("🎉 You Win! 🎉 ");
                 }
-                break; // Stop checking other enemies after a hit
+                break; // Stops checking after one hit
             }
         };
 
