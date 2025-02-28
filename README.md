@@ -27,8 +27,7 @@ To install this app, please install the project dependencies and run it locally.
 
 1. clone the repo
 2. Run a terminal and cd into folder Client
-3. 
-4. Go to localhost to start the browser game
+3. Go to localhost to start the browser game
 
 
 ## Wireframes and User Stories

@@ -411,6 +411,7 @@ function showPopup(message) {
             startVelocity: 40,
             gravity: 0.9,
             origin: { x: 0.5, y: 0.6 }, // Center of the screen
+            shapes: ["star"],
             zIndex: 999,
         });
     }
