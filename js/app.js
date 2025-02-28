@@ -3,34 +3,34 @@ const main = document.querySelector('main');
 const context = canvas.getContext('2d');
 const scoreElement = document.getElementById('score-content');
 const lifeElement = document.getElementById('life-content');
-const restartButton = document.getElementById('restart');
+const startButton = document.getElementById('start');
 const backgroundMusic = new Audio('./audio/gamebg.mp3');
 
-// Audio
+// Audio - Adjust volume (0.0 - 1.0)
 const laserSound = new Audio('./audio/laser.mp3');
-laserSound.volume = 0.7; // Adjust volume (0.0 - 1.0)
+laserSound.volume = 0.7;
 
 const winSound = new Audio('./audio/win.mp3');
-winSound.volume = 0.7; // Adjust volume (0.0 - 1.0)
+winSound.volume = 0.7;
 
 const loseSound = new Audio('./audio/lose.mp3');
-loseSound.volume = 0.7; // Adjust volume (0.0 - 1.0)
+loseSound.volume = 0.7;
 
 const startSound = new Audio('./audio/start.mp3');
-startSound.volume = 0.9; // Adjust volume (0.0 - 1.0)
+startSound.volume = 0.9;
 
 const enemyLaserSound = new Audio('./audio/enemylaser.mp3');
-enemyLaserSound.volume = 0.6; // Adjust volume (0.0 - 1.0)
+enemyLaserSound.volume = 0.6;
 
 const enemyHitSound = new Audio('./audio/enemyhit.mp3');
-enemyHitSound.volume = 0.9; // Adjust volume (0.0 - 1.0)
+enemyHitSound.volume = 0.9;
 
 const playerHitSound = new Audio('./audio/playerhit.mp3');
-playerHitSound.volume = 1; // Adjust volume (0.0 - 1.0)
+playerHitSound.volume = 1;
 
-// background audio
-backgroundMusic.loop = true; // Keep playing on loop
-backgroundMusic.volume = 0.5; // Adjust volume (0.0 - 1.0)
+// background audio plays on loop
+backgroundMusic.loop = true;
+backgroundMusic.volume = 0.5;
 
 const bgImage = new Image();
 bgImage.src = "./images/background.png";
@@ -51,7 +51,7 @@ heartImage.alt = "spinning red pixel heart with sparkles"
 // Spritesheet settings
 const FRAME_WIDTH = 950; 
 const FRAME_HEIGHT = 630;
-const TOTAL_FRAMES = 4; // Number of frames in spritesheet
+const TOTAL_FRAMES = 4; 
 
 // Dynamic sizing relative to canvas
 const PLAYER_WIDTH_RATIO = 0.1; // 10% of canvas width
@@ -62,7 +62,7 @@ function updatePlayerSize() {
     playerHeight = (FRAME_HEIGHT / FRAME_WIDTH) * playerWidth; // Maintain aspect ratio
 }
 
-// global
+// Global variables
 let currentFrame = 0;
 let score = 0;
 let lives = 3;
@@ -75,24 +75,22 @@ let isFirstLoad = sessionStorage.getItem("gameStarted") ? false : true; // Track
 
 function showStartPopup() {
     // Draw a semi-transparent background
-    context.fillStyle = "rgba(0, 0, 0, 0.8)";
+    context.fillStyle = "rgba(0, 0, 0, 0.65)";
     context.fillRect(canvas.width / 4, canvas.height / 4, canvas.width / 2, canvas.height / 2);
 
     // Draw move set instructions
     context.fillStyle = "white";
     context.font = "30px Copperplate";
     context.textAlign = "center";
-    context.fillText("🚀 Welcome to Space Cat Shooter! 🚀", canvas.width / 2, canvas.height / 2 - 60);
-    context.fillText("Move Up: ↑ Arrow", canvas.width / 2, canvas.height / 2 - 10);
-    context.fillText("Move Down: ↓ Arrow", canvas.width / 2, canvas.height / 2 + 20);
-
+    context.fillText("🚀 Welcome to Space Cat Shooter! 🚀", canvas.width / 2, canvas.height / 2 - 90);
+    context.fillText("Move Up: ↑ Arrow", canvas.width / 2, canvas.height / 2 - 40);
+    context.fillText("Move Down: ↓ Arrow", canvas.width / 2, canvas.height / 2 - 10);
+    context.fillText("Shoot Lasers: Spacebar", canvas.width / 2, canvas.height / 2 + 20);
     context.fillText("Score 500 points to win", canvas.width / 2, canvas.height / 2 + 70);
 
-    // Change restart button to "Start Game"
-    restartButton.innerText = "Start Game";
-    restartButton.style.position = "absolute";
-    restartButton.style.top = `${canvas.offsetTop + canvas.height / 2 + 120}px`; 
-    restartButton.style.left = `${canvas.offsetLeft + canvas.width / 2 - 50}px`; 
+    startButton.style.position = "absolute";
+    startButton.style.top = `${canvas.offsetTop + canvas.height / 2 + 90}px`; 
+    startButton.style.left = `${canvas.offsetLeft + canvas.width / 2 - 90}px`; 
 }
 
 // Function to redraw everything after resizing
@@ -187,8 +185,8 @@ let player = new Player(50, canvas.height / 2);
 // Enemy Class
 class Enemy {
     constructor() {
-        this.width = 60; // Set enemy width
-        this.height = 60; // Set enemy height
+        this.width = 60; 
+        this.height = 60; 
         this.x = canvas.width; // Spawn at the right edge
         this.y = Math.random() * (canvas.height - this.height); // Random y position
         this.speed = Math.random() * 3 + 2; // Random speed between 2 and 5
@@ -391,7 +389,7 @@ function showPopup(message) {
     context.fillStyle = "white";
     context.font = "40px Copperplate";
     context.textAlign = "center";
-    context.fillText(message, canvas.width / 2, canvas.height / 2 - 60);
+    context.fillText(message, canvas.width / 2, canvas.height / 2 - 90);
 
     // Stop the game loop
     gameRunning = false;
@@ -409,17 +407,17 @@ function showPopup(message) {
             spread: 250,
             startVelocity: 40,
             gravity: 0.9,
-            origin: { x: 0.5, y: 0.6 }, // Center of the screen
+            origin: { x: 0.5, y: 0.6 }, // Center of the canvas
             shapes: ["star"],
             zIndex: 999,
         });
     }
 
 
-    restartButton.style.position = "absolute";
-    restartButton.style.top = `${canvas.offsetTop + canvas.height / 2 - 40}px`; // Move below pop-up
-    restartButton.style.left = `${canvas.offsetLeft + canvas.width / 2 - 50}px`; // Centered
-    restartButton.style.display = "block"; // Make sure it's visible
+    startButton.style.position = "absolute";
+    startButton.style.top = `${canvas.offsetTop + canvas.height / 2 - 50}px`; // Move below pop-up
+    startButton.style.left = `${canvas.offsetLeft + canvas.width / 2 - 90}px`; // Centered
+    startButton.style.display = "block"; // Make sure it's visible
 }
 
 // Event Listeners
@@ -430,11 +428,11 @@ document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowDown') player.move('down');
     if (event.key === ' ') player.shoot(); // Fire laser on Spacebar
 });
-// Function to restart the game when the restart button is clicked
-restartButton.addEventListener("click", () => {
+// Function to restart the game when the start button is clicked
+startButton.addEventListener("click", () => {
     startSound.play();
-    if (restartButton.innerText === "Start Game") return; // Prevent gameInit from running twice
-    window.location.reload(); // Reload the page for a full restart
+    if (startButton.innerText === "Start Game") return; // Prevent gameInit from running twice
+    window.location.reload();
 });
 
 // Start game upon opening 
@@ -448,7 +446,7 @@ window.onload = () => {
 
     if (isFirstLoad) {
         showStartPopup(); // Show popup before starting the game
-        restartButton.onclick = startGame; // Attach event to start game
+        startButton.onclick = startGame; // Attach event to start game
     } else {
         gameInit(); // Start game immediately if not first load
     }
@@ -457,9 +455,9 @@ window.onload = () => {
 // Function to start the game after clicking "Start Game"
 function startGame() {
     sessionStorage.setItem("gameStarted", "true"); // Mark game as started
-    restartButton.style.display = "none"; // Hide button after clicking
+    startButton.style.display = "none"; // Hide button after clicking
     context.clearRect(0, 0, canvas.width, canvas.height); // Clear popup
-    gameInit(); // Start the game
+    gameInit();
 };
 
 bgImage.onload = function () {
