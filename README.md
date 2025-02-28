@@ -9,7 +9,8 @@ Space Cat Shooter is an JavaScript browser game! Nyan cat traverses the galaxy t
 
 Demo:
 
-![Demo](/images/examplepreview.gif)
+[![Demo](https://img.youtube.com/vi/7WNKHZXzlPg/maxresdefault.jpg)](https://www.youtube.com/watch?v=7WNKHZXzlPg)
+
 
 ## Techstack
 
